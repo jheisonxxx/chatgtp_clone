@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  backend:
+    image: "reto-faster-backend:latest"
+
+  frontend:
+    image: "reto-faster-frontend:latest"
