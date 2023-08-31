@@ -11,7 +11,6 @@ from app.core.config import settings
 from app.db import Base
 from app.deps.users import get_user_manager
 from app.factory import create_app
-from app.models.item import Item
 from app.models.user import User
 from tests.utils import generate_random_string
 
@@ -79,20 +78,6 @@ def create_user(db: AsyncSession, default_password: str):
     return inner
 
 
-@pytest.fixture(scope="session")
-def create_item(db: AsyncSession, create_user: Callable):
-    async def inner(user=None):
-        if not user:
-            user = await create_user()
-        item = Item(
-            user=user,
-            value="value",
-        )
-        db.add(item)
-        await db.commit()
-        return item
-
-    return inner
 
 
 @pytest.fixture(scope="session")

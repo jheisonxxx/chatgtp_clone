@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 7 * 24 * 60  # 7 days
 
     BACKEND_CORS_ORIGINS = [
-        "*",  # Cambia esto al dominio donde se ejecuta tu app React
+        "*",
     ]
 
     # The following variables need to be defined in environment
