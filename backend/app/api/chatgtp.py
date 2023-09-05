@@ -75,8 +75,8 @@ def upload_file(file: UploadFile = File(...), apikey: str = Form(...)):
     apikey_request = ApiKeyRequest(**apikey_data)
     response = is_api_key_valid(apikey_request)
     if response.status_code == 200:
-        df = verify_csv(file)
         try:
+            df = verify_csv(file)
             # Parse columns and generate initial description using ChatGPT
             columns = ", ".join(df.columns)
             description_prompt = f"Este es un CSV con las siguientes columnas: {columns}. ¿Puedes proporcionar una descripción inicial de los datos y sugerir análisis?"
