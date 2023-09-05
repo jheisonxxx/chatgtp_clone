@@ -14,13 +14,15 @@ ALLOWED_EXTENSIONS = {'csv'}
 MAX_ROWS = 100  # Maximum row limit
 
 @router.post("/verify_apikey")
-def is_api_key_valid(apikey: ApiKeyRequest):
-    openai.api_key = apikey
+def is_api_key_valid(api_key_request: ApiKeyRequest):
+    openai.api_key = api_key_request.apikey
     try:
-        response = openai.Completion.create(
-            engine="davinci",
-            prompt="This is a test.",
-            max_tokens=5
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "This is a test"}
+            ]
         )
         if response['id'] is not None:
             return JSONResponse(content={
@@ -65,23 +67,20 @@ def verify_csv(file: UploadFile):
 
     return df
 
-
-
-
-
-
 @router.post('/upload-file')
 def upload_file(file: UploadFile = File(...), apikey: str = Form(...)):
-    response = is_api_key_valid(apikey)
-    openai.api_key = apikey
-
+    apikey_data = {
+        "apikey": apikey,
+    }
+    apikey_request = ApiKeyRequest(**apikey_data)
+    response = is_api_key_valid(apikey_request)
     if response.status_code == 200:
         df = verify_csv(file)
         try:
             # Parse columns and generate initial description using ChatGPT
             columns = ", ".join(df.columns)
             description_prompt = f"Este es un CSV con las siguientes columnas: {columns}. ¿Puedes proporcionar una descripción inicial de los datos y sugerir análisis?"
-
+            openai.api_key = apikey
             chat_response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
